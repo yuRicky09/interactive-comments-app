@@ -1,0 +1,17 @@
+h1 {
+  font-size: var(--heading-1);
+}
+
+h2 {
+  font-size: var(--heading-2);
+}
+
+h3 {
+  font-size: var(--heading-3);
+}
+
+h1,
+h2,
+h3 {
+  color: var(--dark-blue);
+}
