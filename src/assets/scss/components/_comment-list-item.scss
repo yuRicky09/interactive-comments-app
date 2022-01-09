@@ -1,0 +1,78 @@
+.comment-item {
+  .comment {
+    border-radius: 5px;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+    background-color: #fff;
+    margin-bottom: 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    &__header {
+      display: flex;
+
+      .info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        &__avatar {
+          width: 3.5rem;
+          height: 3.5rem;
+          border-radius: 50%;
+        }
+
+        &__user-name {
+          font-weight: bold;
+          color: var(--dark-blue);
+        }
+
+        &__badge {
+          background-color: var(--moderate-blue);
+          border-radius: 3px;
+          padding: 1px 5px;
+          color: #fff;
+        }
+
+        &__time {
+        }
+      }
+    }
+
+    &__body {
+    }
+
+    &__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .vote {
+        padding: 0.7rem 1rem;
+        border-radius: 5px;
+        background-color: var(--very-light-gray);
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+
+        .scores {
+          font-size: 2rem;
+          font-weight: 500;
+          color: var(--moderate-blue);
+        }
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+    }
+  }
+
+  .replies {
+    padding-left: 1rem;
+    border-left: 4px solid var(--light-gray);
+  }
+}

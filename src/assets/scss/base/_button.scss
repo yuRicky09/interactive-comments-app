@@ -1,0 +1,24 @@
+.btn {
+  padding: 1.5rem 2rem;
+  border-radius: 5px;
+  background-color: var(--moderate-blue);
+  color: #fff;
+}
+
+.btn--ghost {
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.btn--ghost.delete {
+  color: var(--soft-red);
+}
+
+.btn--ghost.edit,
+.btn--ghost.reply {
+  color: var(--moderate-blue);
+}
