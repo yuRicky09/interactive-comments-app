@@ -36,8 +36,10 @@ img {
 }
 
 button {
+  cursor: pointer;
   border: none;
   font-family: inherit;
+  background-color: transparent;
 }
 
 button:focus {
@@ -54,4 +56,33 @@ button:focus {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 10;
+  backdrop-filter: blur(1px);
+}
+
+.avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+}
+
+textarea {
+  appearance: none;
+  width: 100%;
+  border: 2px solid var(--light-gray);
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  resize: none;
+  color: inherit;
+  font-size: 1.6rem;
+
+  &:focus {
+    outline: none;
+    border: 2px solid var(--moderate-blue);
+  }
+}
+
+.preventScrolling {
+  overflow-y: hidden;
+  height: 100vh;
 }

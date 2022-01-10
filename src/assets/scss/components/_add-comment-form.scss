@@ -1,0 +1,28 @@
+.comment-form {
+  margin: 1rem 0;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.15);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+  row-gap: 1.2rem;
+
+  &__input {
+    grid-column: 1 / -1;
+  }
+
+  &__avatar {
+    grid-column: 1 / 2;
+
+    img {
+      display: block;
+    }
+  }
+
+  &__action {
+    grid-column: 2 / 3;
+    justify-self: end;
+  }
+}

@@ -1,19 +1,17 @@
 <template>
-  <div class="add-comment-form">
-    <div>
+  <div class="comment-form">
+    <div class="comment-form__input">
       <textarea
-        name=""
-        id=""
-        cols="30"
-        rows="10"
-        v-model.trim="content"
+        rows="5"
+        placeholder="Add a comment"
+        v-model.trim="commentContent"
       ></textarea>
     </div>
-    <div>
-      <img :src="userImg" alt="user avatar" />
+    <div class="comment-form__avatar">
+      <img :src="userImg" class="avatar" alt="user avatar" />
     </div>
-    <div>
-      <button @click="addComment(parentCommentId)">SEND</button>
+    <div class="comment-form__action">
+      <button class="btn" @click="addComment(parentCommentId)">SEND</button>
     </div>
   </div>
   <BaseSpinner v-if="isLoading" />
@@ -23,6 +21,7 @@
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import BaseSpinner from "@/components/UI/BaseSpinner.vue";
+import { useAddComment } from "@/composable/useAddComment";
 
 export default {
   name: "AddCommentForm",
@@ -31,7 +30,7 @@ export default {
       type: String,
       default: null,
     },
-    replyingTo: {
+    formInitContent: {
       type: String,
       default: null,
     },
@@ -39,24 +38,30 @@ export default {
   components: { BaseSpinner },
   setup(props) {
     const store = useStore();
-    const content = ref(props.replyingTo);
+    const commentContent = ref(props.formInitContent);
     const userImg = computed(() => store.state.user.userImg);
     const isLoading = computed(() => store.state.comment.isLoading);
 
+    const { split } = useAddComment();
+
     async function addComment(parentId) {
-      if (!content.value) return;
+      if (!commentContent.value) return;
+
+      const { replyingTo, content } = split(commentContent.value);
+
       const comment = {
-        content: content.value,
+        content,
+        replyingTo,
         parentCommentId: parentId,
       };
 
       await store.dispatch("comment/addComment", comment);
-      content.value = "";
+      commentContent.value = "";
     }
 
     return {
       userImg,
-      content,
+      commentContent,
       addComment,
       isLoading,
     };

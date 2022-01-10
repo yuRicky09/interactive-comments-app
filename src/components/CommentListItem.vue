@@ -3,7 +3,7 @@
     <div class="comment">
       <div class="comment__header">
         <div class="info">
-          <img :src="comment.userImg" alt="user avatar" class="info__avatar" />
+          <img :src="comment.userImg" alt="user avatar" class="avatar" />
           <span class="info__user-name">{{ comment.userName }}</span>
           <span v-if="currentUserId == comment.userId" class="info__badge"
             >you</span
@@ -14,13 +14,32 @@
         <!-- <div></div> -->
       </div>
       <div class="comment__body">
-        <p class="content">{{ comment.content }}</p>
+        <p v-if="!isEditing" class="content">
+          <span v-if="comment.replyingTo" class="replyingTo">{{
+            `@${comment.replyingTo} `
+          }}</span
+          >{{ comment.content }}
+        </p>
+        <div v-if="isEditing" class="edit-area">
+          <textarea rows="5" v-model.trim="commentContent"></textarea>
+          <button class="btn" @click="updateComment">Update</button>
+        </div>
       </div>
       <div class="comment__footer">
         <div class="vote">
-          <PlusIcon />
-          <span class="scores">{{ comment.scores.length }}</span>
-          <MinusIcon />
+          <button
+            class="vote__btn"
+            @click="addScore(comment.scores, comment.id)"
+          >
+            <PlusIcon class="vote__icon" />
+          </button>
+          <span class="vote__scores">{{ comment.scores.length }}</span>
+          <button
+            class="vote__btn"
+            @click="deductScore(comment.scores, comment.id)"
+          >
+            <MinusIcon class="vote__icon" />
+          </button>
         </div>
         <div class="actions">
           <button
@@ -34,6 +53,7 @@
           <button
             v-if="currentUserId == comment.userId"
             class="btn--ghost delete"
+            @click="showModal"
           >
             <DeleteIcon />
             <span>Delete</span>
@@ -41,6 +61,7 @@
           <button
             v-if="currentUserId == comment.userId"
             class="btn--ghost edit"
+            @click="editComment"
           >
             <EditIcon />
             <span>Edit</span>
@@ -51,7 +72,7 @@
     <AddCommentForm
       v-if="isReplying"
       :parent-comment-id="parentCommentId"
-      :replying-to="replyingTo"
+      :form-init-content="formInitContent"
     />
     <div class="replies" v-if="replies.length > 0">
       <CommentListItem
@@ -60,14 +81,40 @@
         :comment="reply"
       />
     </div>
+
+    <BaseSpinner v-if="isLoading" />
+
+    <base-modal
+      @close-modal="closeModal"
+      title="Delete comment"
+      :modalIsOpen="modalIsOpen"
+    >
+      <template #content>
+        <p>
+          Are you sure you want to delete this comment? This will remove the
+          comment and can't be undone.
+        </p>
+      </template>
+      <template #action>
+        <button class="btn--cancel" @click="closeModal">NO, CANCEL</button>
+        <button class="btn--delete" @click="deleteComment">YES, DELETE</button>
+      </template>
+    </base-modal>
   </div>
 </template>
 
 <script>
 import AddCommentForm from "@/components/AddCommentForm.vue";
+import BaseSpinner from "@/components/UI/BaseSpinner.vue";
+import BaseModal from "@/components/UI/BaseModal.vue";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
+
 import { useTimeFormat } from "@/composable/useTimeFormat";
+import { useAddComment } from "@/composable/useAddComment";
+import { useCalculateScore } from "@/composable/useCalculateScore";
+import { useModalControl } from "@/composable/useModalControl";
+
 import PlusIcon from "@/assets/images/svg/plus.svg";
 import MinusIcon from "@/assets/images/svg/minus.svg";
 import ReplyIcon from "@/assets/images/svg/reply.svg";
@@ -84,6 +131,8 @@ export default {
   },
   components: {
     AddCommentForm,
+    BaseSpinner,
+    BaseModal,
     PlusIcon,
     MinusIcon,
     ReplyIcon,
@@ -93,13 +142,17 @@ export default {
   setup(props) {
     const store = useStore();
     const isReplying = ref(false);
-    const comments = computed(() => store.state.comment.comments);
+    const isEditing = ref(false);
+    const formInitContent = ref(null);
+
+    const isLoading = computed(() => store.state.comment.isLoading);
+
     const currentUserId = computed(() => store.state.user.userId);
-    const replyingTo = ref(null);
 
     const { createdAt } = useTimeFormat(props.comment.createdAt.toDate());
 
     // find root comment's replies
+    const comments = computed(() => store.state.comment.comments);
     const replies = computed(() => {
       return comments.value.filter((comment) => {
         const currentCommentId = props.comment.id;
@@ -116,21 +169,64 @@ export default {
 
     function replyComment() {
       toggleCommentForm();
-      replyingTo.value = `@${props.comment.userName}`;
+      formInitContent.value = `@${props.comment.userName} `;
     }
 
     function toggleCommentForm() {
       isReplying.value = !isReplying.value;
     }
 
+    const commentContent = ref(null);
+    commentContent.value = props.comment.replyingTo
+      ? `@${props.comment.replyingTo} ${props.comment.content}`
+      : props.comment.content;
+
+    const { split } = useAddComment();
+
+    function editComment() {
+      isEditing.value = !isEditing.value;
+    }
+
+    function updateComment() {
+      const { replyingTo, content } = split(commentContent.value);
+      const comment = {
+        replyingTo,
+        content,
+        id: props.comment.id,
+      };
+      store.dispatch("comment/updateComment", comment);
+      isEditing.value = false;
+    }
+
+    async function deleteComment() {
+      await store.dispatch("comment/deleteComment", props.comment.id);
+      closeModal();
+    }
+
+    const { addScore, deductScore } = useCalculateScore();
+
+    const { showModal, closeModal, modalIsOpen } = useModalControl();
+
     return {
       replies,
       parentCommentId,
       isReplying,
+      isEditing,
       createdAt,
       currentUserId,
       replyComment,
-      replyingTo,
+      editComment,
+      deleteComment,
+      formInitContent,
+      commentContent,
+      updateComment,
+      isLoading,
+      comments,
+      addScore,
+      deductScore,
+      showModal,
+      closeModal,
+      modalIsOpen,
     };
   },
 };

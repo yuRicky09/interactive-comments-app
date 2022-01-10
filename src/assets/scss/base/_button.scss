@@ -22,3 +22,19 @@
 .btn--ghost.reply {
   color: var(--moderate-blue);
 }
+
+.btn--delete,
+.btn--cancel {
+  padding: 1.5rem;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 1.6rem;
+}
+
+.btn--delete {
+  background-color: var(--soft-red);
+}
+
+.btn--cancel {
+  background-color: var(--grayish-blue);
+}

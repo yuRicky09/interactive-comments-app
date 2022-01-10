@@ -17,12 +17,6 @@
         align-items: center;
         gap: 1rem;
 
-        &__avatar {
-          width: 3.5rem;
-          height: 3.5rem;
-          border-radius: 50%;
-        }
-
         &__user-name {
           font-weight: bold;
           color: var(--dark-blue);
@@ -36,11 +30,26 @@
         }
 
         &__time {
+          font-size: 1.4rem;
         }
       }
     }
 
     &__body {
+      .replyingTo {
+        color: var(--moderate-blue);
+        font-weight: bold;
+      }
+
+      .edit-area {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        .btn {
+          align-self: flex-end;
+        }
+      }
     }
 
     &__footer {
@@ -56,7 +65,18 @@
         align-items: center;
         gap: 2rem;
 
-        .scores {
+        &__btn:hover {
+          .vote__icon {
+            fill: var(--moderate-blue);
+          }
+        }
+
+        &__icon {
+          vertical-align: middle;
+          fill: var(--light-grayish-blue);
+        }
+
+        &__scores {
           font-size: 2rem;
           font-weight: 500;
           color: var(--moderate-blue);
@@ -74,5 +94,6 @@
   .replies {
     padding-left: 1rem;
     border-left: 4px solid var(--light-gray);
+    margin-bottom: 3rem;
   }
 }
