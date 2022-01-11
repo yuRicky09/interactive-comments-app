@@ -54,10 +54,6 @@ export const comment = {
         q,
         { includeMetadataChanges: true },
         (snapshot) => {
-          // 監聽realtime data的snapshot是一發現有change(如寫入動作等)就會觸發。
-          // 但如果當有使用firebase的serverTimestamp寫入時間時，此方法會要靠後端計算才寫入值(可能幾0.幾毫秒)，
-          // 所以此時觸發的snapshot的寫入時間值有可能為null(因還未寫入完成)造成後續取用時間時使用toDate()報錯，
-          // 所以多加一個判斷hasPendingWrites 當還有尚未寫入完成的資料時就return，當後端完整寫入完成時又會觸發snapshot這時再做....
           if (snapshot.metadata.hasPendingWrites) return;
           const comments = [];
           snapshot.docs.forEach((doc) => {
@@ -92,7 +88,7 @@ export const comment = {
 
         await addDoc(collectionRef, comment);
       } catch (err) {
-        console.log(err);
+        throw new Error(err.message);
       } finally {
         commit("changeLoadingState", false);
       }
@@ -107,7 +103,7 @@ export const comment = {
           content,
         });
       } catch (err) {
-        console.log(err);
+        throw new Error(err.message);
       } finally {
         commit("changeLoadingState", false);
       }
@@ -117,7 +113,7 @@ export const comment = {
         const docRef = doc(db, "comments", commentId);
         await deleteDoc(docRef);
       } catch (err) {
-        console.log(err);
+        throw new Error(err.message);
       }
     },
     async addScore({ rootState }, commentId) {
@@ -129,7 +125,7 @@ export const comment = {
           scores: arrayUnion(userId),
         });
       } catch (err) {
-        console.log(err);
+        throw new Error(err.message);
       }
     },
     async deductScore({ rootState }, commentId) {
@@ -141,7 +137,7 @@ export const comment = {
           scores: arrayRemove(userId),
         });
       } catch (err) {
-        console.log(err);
+        throw new Error(err.message);
       }
     },
   },

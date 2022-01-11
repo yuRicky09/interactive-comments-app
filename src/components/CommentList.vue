@@ -1,6 +1,6 @@
 <template>
   <main class="comment-list">
-    <div v-if="errorMsg">{{ errorMsg }}</div>
+    <ErrorHandler v-if="errorMsg" :error-msg="errorMsg" />
     <template v-if="!errorMsg && rootComments.length > 0">
       <CommentListItem
         v-for="comment in rootComments"
@@ -8,7 +8,7 @@
         :comment="comment"
       />
     </template>
-    <AddCommentForm />
+    <AddCommentForm btnText="SEND" :needAutofocus="false" />
     <BaseSpinner v-if="isLoading" />
   </main>
 </template>
@@ -18,15 +18,21 @@ import CommentListItem from "@/components/CommentListItem.vue";
 import AddCommentForm from "@/components/AddCommentForm.vue";
 import BaseSpinner from "@/components/UI/BaseSpinner.vue";
 import { useStore } from "vuex";
-import { ref, computed } from "vue";
+import { useHandleError } from "@/composable/useHandleError";
+import { ref, computed, defineAsyncComponent } from "vue";
+
+const ErrorHandler = defineAsyncComponent(() =>
+  import("@/components/UI/ErrorHandler.vue")
+);
 
 export default {
   name: "CommentList",
-  components: { CommentListItem, BaseSpinner, AddCommentForm },
+  components: { CommentListItem, BaseSpinner, AddCommentForm, ErrorHandler },
   setup() {
     const store = useStore();
     const isLoading = ref(false);
-    const errorMsg = ref(null);
+
+    const { errorMsg, handleError } = useHandleError();
 
     const rootComments = computed(
       () => store.getters["comment/getRootComments"]
@@ -42,7 +48,7 @@ export default {
           store.dispatch("comment/handleCommentsChange"),
         ]);
       } catch (err) {
-        errorMsg.value = err.message;
+        handleError(err.message);
       } finally {
         isLoading.value = false;
       }

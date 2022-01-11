@@ -1,8 +1,24 @@
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  background-color: transparent;
+  outline: none;
+
+  &:hover {
+    opacity: 0.6;
+  }
+}
+
 .btn {
   padding: 1.5rem 2rem;
   border-radius: 5px;
   background-color: var(--moderate-blue);
   color: #fff;
+
+  @media screen and (min-width: $bp-lg) {
+    padding: 1.5rem 2.5rem;
+  }
 }
 
 .btn--ghost {

@@ -10,5 +10,3 @@ export default {
   components: { CommentList },
 };
 </script>
-
-<style lang="scss"></style>

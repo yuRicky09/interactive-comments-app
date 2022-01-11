@@ -7,8 +7,4 @@ export default createStore({
     comment,
     user,
   },
-  state: {},
-  getters: {},
-  mutations: {},
-  actions: {},
 });

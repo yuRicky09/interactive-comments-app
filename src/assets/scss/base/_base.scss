@@ -30,22 +30,6 @@ ul {
   list-style: none;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-button {
-  cursor: pointer;
-  border: none;
-  font-family: inherit;
-  background-color: transparent;
-}
-
-button:focus {
-  outline: none;
-}
-
 .overlay {
   position: fixed;
   top: 0;
@@ -75,6 +59,7 @@ textarea {
   resize: none;
   color: inherit;
   font-size: 1.6rem;
+  transition: all 0.2s ease-in-out;
 
   &:focus {
     outline: none;

@@ -1,21 +1,19 @@
 <template>
-  <teleport to="body">
-    <div v-if="modalIsOpen" class="overlay" @click="$emit('close-modal')"></div>
+  <div v-if="modalIsOpen" class="overlay" @click="$emit('close-modal')"></div>
 
-    <transition name="modal-popup">
-      <div v-if="modalIsOpen" class="modal">
-        <div class="modal__header">
-          <h2>{{ title }}</h2>
-        </div>
-        <div class="modal__body">
-          <slot name="content"></slot>
-        </div>
-        <div class="modal__footer">
-          <slot name="action"></slot>
-        </div>
+  <transition name="modal-popup">
+    <div v-if="modalIsOpen" class="modal">
+      <div class="modal__header">
+        <h2>{{ title }}</h2>
       </div>
-    </transition>
-  </teleport>
+      <div class="modal__body">
+        <slot name="content"></slot>
+      </div>
+      <div class="modal__footer">
+        <slot name="action"></slot>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <script>

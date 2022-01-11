@@ -7,15 +7,35 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   align-items: center;
-  row-gap: 1.2rem;
+  gap: 1.2rem;
+
+  @media screen and (min-width: $bp-md) {
+    padding: 2rem;
+    grid-template-columns: min-content 1fr min-content;
+    grid-template-row: min-content;
+  }
+
+  @media screen and (min-width: $bp-xl) {
+    padding: 2.5rem 2.5rem 2rem;
+  }
 
   &__input {
     grid-column: 1 / -1;
+
+    @media screen and (min-width: $bp-md) {
+      grid-column: 2 / 3;
+      grid-row: 1 / 2;
+    }
   }
 
   &__avatar {
     grid-column: 1 / 2;
 
+    @media screen and (min-width: $bp-md) {
+      grid-column: 1 / 2;
+      grid-row: 1 / 2;
+      align-self: start;
+    }
     img {
       display: block;
     }
@@ -24,5 +44,11 @@
   &__action {
     grid-column: 2 / 3;
     justify-self: end;
+
+    @media screen and (min-width: $bp-md) {
+      grid-column: 3 / 4;
+      grid-row: 1 / 2;
+      align-self: start;
+    }
   }
 }

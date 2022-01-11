@@ -10,7 +10,6 @@ export const user = {
       userImg: null,
     };
   },
-  getters: {},
   actions: {
     async getCurrentUser({ commit }, userId) {
       try {

@@ -5,58 +5,91 @@
         rows="5"
         placeholder="Add a comment"
         v-model.trim="commentContent"
+        ref="textareaEl"
       ></textarea>
     </div>
     <div class="comment-form__avatar">
       <img :src="userImg" class="avatar" alt="user avatar" />
     </div>
     <div class="comment-form__action">
-      <button class="btn" @click="addComment(parentCommentId)">SEND</button>
+      <button class="btn" @click="addComment(parentCommentId)">
+        {{ btnText }}
+      </button>
     </div>
+    <BaseSpinner v-if="isLoading" />
+    <ErrorHandler v-if="errorMsg" :error-msg="errorMsg" />
   </div>
-  <BaseSpinner v-if="isLoading" />
 </template>
 
 <script>
 import { useStore } from "vuex";
-import { computed, ref } from "vue";
+import { computed, ref, defineAsyncComponent, onMounted } from "vue";
 import BaseSpinner from "@/components/UI/BaseSpinner.vue";
 import { useAddComment } from "@/composable/useAddComment";
+import { useHandleError } from "@/composable/useHandleError";
+
+const ErrorHandler = defineAsyncComponent(() =>
+  import("@/components/UI/ErrorHandler.vue")
+);
 
 export default {
   name: "AddCommentForm",
+  emits: ["close-comment-form"],
   props: {
     parentCommentId: {
       type: String,
       default: null,
     },
-    formInitContent: {
+    commentInitContent: {
       type: String,
       default: null,
     },
+    btnText: {
+      type: String,
+      required: true,
+    },
+    needAutofocus: {
+      type: Boolean,
+      default: true,
+    },
   },
-  components: { BaseSpinner },
-  setup(props) {
+  components: { BaseSpinner, ErrorHandler },
+  setup(props, { emit }) {
     const store = useStore();
-    const commentContent = ref(props.formInitContent);
+    const commentContent = ref(props.commentInitContent);
+    const textareaEl = ref();
+
     const userImg = computed(() => store.state.user.userImg);
     const isLoading = computed(() => store.state.comment.isLoading);
 
+    // Set focus on textarea
+    onMounted(() => {
+      if (props.needAutofocus) {
+        textareaEl.value.focus();
+      }
+    });
+
+    const { errorMsg, handleError } = useHandleError();
     const { split } = useAddComment();
 
     async function addComment(parentId) {
-      if (!commentContent.value) return;
+      try {
+        if (!commentContent.value) return;
 
-      const { replyingTo, content } = split(commentContent.value);
+        const { replyingTo, content } = split(commentContent.value);
 
-      const comment = {
-        content,
-        replyingTo,
-        parentCommentId: parentId,
-      };
+        const comment = {
+          content,
+          replyingTo,
+          parentCommentId: parentId,
+        };
 
-      await store.dispatch("comment/addComment", comment);
-      commentContent.value = "";
+        await store.dispatch("comment/addComment", comment);
+        commentContent.value = "";
+        emit("close-comment-form");
+      } catch (err) {
+        handleError(err.message);
+      }
     }
 
     return {
@@ -64,6 +97,8 @@ export default {
       commentContent,
       addComment,
       isLoading,
+      errorMsg,
+      textareaEl,
     };
   },
 };
